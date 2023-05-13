@@ -32,11 +32,19 @@ class serviceController extends Controller
 
         if ($diffInDays >= 5) {
             //"The time difference is more than 5 days.";
-            return ['status' => true,"message" =>"not visited in 5 day."];
+            return ['status' => true,"message" =>"คุณมาเมื่อ ".$diffInDays." วันที่แล้ว"];
            
         } else {
             //"The time difference is not more than 5 days.";
-            return ['status' => false,"message" =>"visited in 5 day."];
+            if ($diffInDays==2) {
+                // return ['status' => false,"message" =>"คุณมาเมื่อวานนี้แล้ว ต้องมาในระยะไม่ติดต่อกัน 5 วัน"];
+                return $diffInDays;
+            }else if($diffInDays==1){
+                return ['status' => false,"message" =>"คุณมาแล้วในวันนี้ ต้องมาในระยะไม่ติดต่อกัน 5 วัน"];
+            }else{
+                return ['status' => false,"message" =>"คุณมาเมื่อ ".$diffInDays." วันที่แล้ว ต้องมาในระยะไม่ติดต่อกัน 5 วัน"];
+            }
+            
         }
 
 
