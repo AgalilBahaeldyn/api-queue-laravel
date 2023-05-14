@@ -57,21 +57,53 @@ class serviceController extends Controller
 
         if (empty((array) $checkhastrow)) {
             return ['status' => false,"message" =>"unauthorized"];
-        } else {
+        } 
+        
+        else {
+            $currentDate = Carbon::now()->toDateString();
+            // เช็คว่าวันนี้เคยมาไหม
+            $datatoday=Service::select('servicedate')
+            ->where('servicedate',$currentDate)
+            ->where('cid',$cid)
+            ->get();
+            // ถ้าเคยมาแล้วแสดงข้อมูลซ้ำ
+            if (count($datatoday)>0) {
+                $dataduplicate=Service::select('queue')
+                ->where('servicedate',$currentDate)
+                ->where('cid',$cid)
+                ->orderBy('id', 'desc')
+                ->first();
+                return ['status' => false,"message" =>"คุณจองคิวไปล้วในวันนี้ คือคิวที่ ".$dataduplicate->queue,"queue"=>$dataduplicate->queue];
+            }
+
 
             $currentDate = Carbon::now()->toDateString();
+            // เช็คว่าวันนี้เคยมาไหม
+            $datatoday=Service::select('queue')
+            ->where('servicedate',$currentDate)
+            ->orderBy('id', 'desc')
+            ->first();
+
 
             $result=new Service();
             $result->cid=$cid;
+            $result->queue=$datatoday->queue+1;
             $result->owner_cid=$owner;
             $result->servicedate=$currentDate;
             $result->create_at=date('Y-m-d H:i:s');
             $result=$result->save();
 
+            // process queue
 
-            return ['status' => false,"message" =>"insert visit success"];
+
+
+            return ['status' => true,"message" =>"จองคิวสำเร็จ","queue"=>$datatoday->queue+1];
         }
 
+        
+
+        //insertสำเร็จรีเทินคิว true
+        //else false ต้องปี
        
 
         
