@@ -13,15 +13,15 @@ class serviceController extends Controller
 {
     //
 
-    
+
     public function searchbycid($cid)
-    {   
+    {
         $datelastvisit=Service::select('servicedate')
         ->where('cid',$cid)
         ->orderBy('id', 'desc')
         ->first();
         // ถ้าไม่เคยมา เลยมาครั้งแรก
-        
+
         if (empty((array) $datelastvisit)) {
             return ['status' => true,"message" =>"not visited in 5 day."];
         }
@@ -33,7 +33,7 @@ class serviceController extends Controller
         if ($diffInDays >= 5) {
             //"The time difference is more than 5 days.";
             return ['status' => true,"message" =>"คุณมาเมื่อ ".$diffInDays." วันที่แล้ว"];
-           
+
         } else {
             //"The time difference is not more than 5 days.";
             if ($diffInDays==2) {
@@ -44,21 +44,21 @@ class serviceController extends Controller
             }else{
                 return ['status' => false,"message" =>"คุณมาเมื่อ ".$diffInDays." วันที่แล้ว ต้องมาในระยะไม่ติดต่อกัน 5 วัน"];
             }
-            
+
         }
 
 
     }
     public function create_by_id($cid,$owner)
-    {  
+    {
         $checkhastrow=Owner::select('*')
         ->where('owner_cid',$owner)
         ->first();
 
         if (empty((array) $checkhastrow)) {
             return ['status' => false,"message" =>"unauthorized"];
-        } 
-        
+        }
+
         else {
             $currentDate = Carbon::now()->toDateString();
             // เช็คว่าวันนี้เคยมาไหม
@@ -100,22 +100,76 @@ class serviceController extends Controller
             return ['status' => true,"message" =>"จองคิวสำเร็จ","queue"=>$datatoday->queue+1];
         }
 
-        
+
 
         //insertสำเร็จรีเทินคิว true
         //else false ต้องปี
-       
 
-        
+
+
 
     }
-    
 
-       
-        
-    
+
+    public function print_queue($cid)
+    {
+        $GetQueue = Service::select('id','queue')
+        ->where('cid',$cid)
+        ->whereDate('servicedate',date("Y-m-d"))
+        ->first();
+
+
+
+        if($GetQueue != null){
+            $data = [
+                "status" => true,
+                "system_queue_opd_id"=>$GetQueue->id ,
+                "vn"=> $cid ,
+                "hn"=> "" ,
+                "qn"=> "" ,
+                "main_dep"=> "" ,
+                "queue"=> $GetQueue->queue,
+                "queue_text"=> "",
+                "department"=> "" ,
+                "fullname"=> "" ,
+                "ptname"=> "" ,
+                "pttype"=> "",
+                "system_queue_opd_date"=> "" ,
+                "system_queue_opd_status"=> "",
+                "created_at"=> "" ,
+                "updated_at"=> "" ,
+                "qn_barcode"=> ""
+            ];
+            return ["status"=>true,"data"=>$data];
+        }else{
+
+            $data = [
+                "status" => false,
+                "system_queue_opd_id"=> "" ,
+                "vn"=> $cid ,
+                "hn"=> "" ,
+                "qn"=> "" ,
+                "main_dep"=> "" ,
+                "queue"=> $GetQueue->queue,
+                "queue_text"=> "",
+                "department"=> "" ,
+                "fullname"=> "" ,
+                "ptname"=> "" ,
+                "pttype"=> "",
+                "system_queue_opd_date"=> "" ,
+                "system_queue_opd_status"=> "",
+                "created_at"=> "" ,
+                "updated_at"=> "" ,
+                "qn_barcode"=> ""
+            ];
+            return ["status"=>false,"data"=>$data];
+        }
+
+    }
+
+
     public function create(Request $request)
-    {   
+    {
         $user = Auth::user();
 
         $validator = Validator::make($request->all(),[
@@ -147,7 +201,7 @@ class serviceController extends Controller
         $result=Service::select('*')
         // ->where('id',$id)
         ->get();
-       
+
         return response()->json($result);
     }
 
