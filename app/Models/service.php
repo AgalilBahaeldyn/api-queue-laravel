@@ -12,7 +12,7 @@ class Service extends Model
     protected $primaryKey = 'id';
     protected $table = 'service';
     protected $fillable = [
-
+        
 
     ];
     const CREATED_AT = null;

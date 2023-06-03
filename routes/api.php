@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\serviceController;
-
+use App\Http\Controllers\API\serviceControllerv2;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,15 +24,31 @@ Route::group([ 'prefix' => 'v1/'], function(){
 
     Route::controller(serviceController::class)->group(function () {
         Route::group([ 'prefix' => 'service'], function(){
-        Route::get('search_by_cid/{cid}', 'searchbycid');
-        Route::get('create_by_id/{cid}/{owner}', 'create_by_id');
-        Route::post('update', 'update');
-        Route::post('logout', 'logout');
-        Route::post('refresh', 'refresh');
-        Route::get('getuserdata', 'getuserdata');
+        Route::get('getreport/{sdate}/{edate}', 'getreport');
+        Route::get('search_by_cid/{cid}/{age}', 'searchbycid');
+
+        Route::get('create_by_id/{cid}/{owner}/{key}/{age}/{fullname?}', 'create_by_id');
+
+        Route::get('serivceperday/{date}', 'serivceperday');
+
+        Route::get('print_queue/{cid}', 'print_queue');
 
     });
 });
+
+    Route::controller(serviceControllerv2::class)->group(function () {
+        Route::group([ 'prefix' => 'servicev2'], function(){
+        Route::get('getreport/{sdate}/{edate}', 'getreport');
+        Route::get('search_by_cid/{cid}/{age}', 'searchbycid');
+
+        Route::get('create_by_id/{cid}/{owner}/{key}/{age}/{fullname?}', 'create_by_id');
+        
+        Route::get('serivceperday/{date}', 'serivceperday');
+
+        Route::get('print_queue/{cid}', 'print_queue');
+
+    });
+    });
 
 
 

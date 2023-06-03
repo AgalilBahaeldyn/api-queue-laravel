@@ -12,7 +12,7 @@ use DateTimeZone;
 
 
 
-class serviceController extends Controller
+class serviceControllerv2 extends Controller
 {
     //
 
