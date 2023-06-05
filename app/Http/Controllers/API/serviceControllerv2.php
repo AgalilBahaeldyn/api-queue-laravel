@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use DateTimeZone;
 
-
+date_default_timezone_set('Asia/Bangkok');
 
 class serviceControllerv2 extends Controller
 {
@@ -25,6 +25,7 @@ class serviceControllerv2 extends Controller
 
         return $result;
     }
+    
 
 
     public function serivceperday($date)
@@ -41,8 +42,11 @@ class serviceControllerv2 extends Controller
 
     public function searchbycid($cid,$age)
     {
-    
-
+        
+       date_default_timezone_set('Asia/Bangkok');
+        // $currentDateTime = date('Y-m-d H:i:s');
+        // return $currentDateTime;
+        
         if (!is_numeric($cid) && strpos($cid, '.') === false) {
             return ['status' => false,"message" =>"บัตรประชาชนต้องเป็นตัวเลขเท่านั้น"];
         } 
@@ -71,7 +75,7 @@ class serviceControllerv2 extends Controller
             ->first();
 
 
-        $datelastvisit=Service::select('servicedate')
+        $datelastvisit=Service::select('servicedate','create_at')
         ->where('cid',$cid)
         ->orderBy('id', 'desc')
         ->first();
@@ -89,18 +93,18 @@ class serviceControllerv2 extends Controller
 
         if ($diffInDays >= $day->day) {
             //"The time difference is more than 5 days.";
-            return ['status' => true,"message" =>"คุณมาเมื่อ ".$diffInDays." วันที่แล้วสามารถจองคิวได้"];
+            return ['status' => true,"message" =>"คุณมาเมื่อ ".$diffInDays."วัน เวลา".$datelastvisit->create_at." วันที่แล้วสามารถจองคิวได้"];
 
         } else {
             //"The time difference is not more than 5 days.";
             if ($diffInDays==1) {
-                return ['status' => false,"message" =>"คุณมาเมื่อวานนี้แล้ว ต้องมาในระยะไม่ติดต่อกัน ".$day->day." วัน"];
+                return ['status' => false,"message" =>"คุณมาแล้ว".$diffInDays."วัน เวลา".$datelastvisit->create_at."ต้องมาในระยะไม่ติดต่อกัน ".$day->day." วัน"];
                 // return $diffInDays;
             }else if($diffInDays==0){
                 // return $datepay;
-                return ['status' => false,"message" =>"คุณมาแล้วในวันนี้ ต้องมาในระยะไม่ติดต่อกัน ".$day->day." วัน"];
+                return ['status' => false,"message" =>"คุณมาแล้ว".$diffInDays."วัน เวลา".$datelastvisit->create_at."ต้องมาในระยะไม่ติดต่อกัน ".$day->day." วัน"];
             }else{
-                return ['status' => false,"message" =>"คุณมาเมื่อ ".$diffInDays." วันที่แล้ว ต้องมาในระยะไม่ติดต่อกัน ".$day->day." วัน"];
+                return ['status' => false,"message" =>"คุณมาแล้ว ".$diffInDays."วัน เวลา".$datelastvisit->create_at." ต้องมาในระยะไม่ติดต่อกัน ".$day->day." วัน"];
             }
         }
 
@@ -108,7 +112,7 @@ class serviceControllerv2 extends Controller
     }
     public function create_by_id($cid,$owner,$age,$keyin,$fullname=null)
     {
-        
+        date_default_timezone_set('Asia/Bangkok');
 
         
         if (intval($age)<15) {
@@ -225,7 +229,7 @@ class serviceControllerv2 extends Controller
             $result->owner_cid=$owner;
             $result->servicedate=$currentDate;
             $result->fullname=str_replace("#","",$fullname);
-            $result->create_at=date('Y-m-d h:i:s');
+            $result->create_at=date('Y-m-d H:i:s');
             $result=$result->save();
 
             // process queue
